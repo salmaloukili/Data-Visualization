@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sales average delivery per season</title>
+    <style>
+      html,
+      body {
+        height: 100%;
+        width: 100%;
+      }
+      body {
+        background-color: black;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+      }
+
+      .legend-item {
+        display: flex;
+        flex-direction: row;
+        justify-content: start;
+        align-items: center;
+        margin-bottom: 5px;
+        font-weight: 600;
+      }
+
+      .actions {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 20px;
+        color: #fff;
+        font-size: 30px;
+        
+      }
+
+      .year {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        margin: 0 50px;
+        font-size: 50px;
+        font-weight: 500;
+      }
+
+      .actions button {
+        background: #20D617;
+        color: #fff;
+        border: 2px solid #fff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        padding: 10px 20px;
+        font-size: 22px; 
+        font-weight: 600;
+        border-radius: 5px;
+        width: 200px;
+      }
+
+  
+      button:disabled,
+      button[disabled] {
+        /* color: #aaa; */
+        background: #95B094;
+        cursor: not-allowed;
+      }
+
+
+      .title {
+        text-align: center;
+        color: #fff;
+        font-size: 40px;
+        margin-bottom: 20px;
+      }
+
+      .subtitle {
+        text-align: center;
+        color: #fff;
+        font-size: 20px;
+        margin-bottom: 20px;
+      }
+
+      .tooltip {
+        position: absolute;
+        background: rgba(255, 255, 255, 0.9);
+        color: black;
+        padding: 10px;
+        border-radius: 5px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        display: none;
+        pointer-events: none;
+        font-size: 16px;
+        z-index: 1000;
+      }
+
+
+
+    </style>
+  </head>
+  <body>
+
+  
+    <div class="title">
+      Sales overview per year for each season
+    </div>
+    <div class="subtitle">
+      Use buttons to switch years
+    </div>
+
+    <section class="actions">
+      <button id="previous">
+        PREVIOUS
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="32"
+          height="32"
+          viewBox="0 0 24 24"
+          style="transform: rotate(180deg)"
+        >
+          <path
+            fill="currentColor"
+            d="M8 17.175V6.825q0-.425.3-.713t.7-.287q.125 0 .263.037t.262.113l8.15 5.175q.225.15.338.375t.112.475t-.112.475t-.338.375l-8.15 5.175q-.125.075-.262.113T9 18.175q-.4 0-.7-.288t-.3-.712"
+          />
+        </svg>
+      </button>
+
+      <div class="year">
+        <!-- <label> Year </label> -->
+        <span id="year-value">2020</span>
+      </div>
+
+      <button id="next">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="32"
+          height="32"
+          viewBox="0 0 24 24"
+        >
+          <path
+            fill="currentColor"
+            d="M8 17.175V6.825q0-.425.3-.713t.7-.287q.125 0 .263.037t.262.113l8.15 5.175q.225.15.338.375t.112.475t-.112.475t-.338.375l-8.15 5.175q-.125.075-.262.113T9 18.175q-.4 0-.7-.288t-.3-.712"
+          />
+        </svg>
+               NEXT    
+      </button>
+    </section>
+
+    <svg height="520px" width="900px">
+      <g transform="translate(50, 50)">
+        <g class="left-circles" transform="translate(0,10)">
+          <circle cx="200" cy="200" r="200" fill="#17B9D6" stroke="white" />
+          <circle cx="200" cy="200" r="150" fill="#B890F0" stroke="white" />
+          <circle cx="200" cy="200" r="100" fill="#F090DA" stroke="white" />
+          <circle cx="200" cy="200" r="50" fill="#F65254" stroke="white" />
+        </g>
+
+        <g class="right-circles" transform="translate(0,10)">
+          <circle cx="600" cy="200" r="200" fill="#17B9D6" stroke="white" />
+          <circle cx="600" cy="200" r="150" fill="#B890F0" stroke="white" />
+          <circle cx="600" cy="200" r="100" fill="#F090DA" stroke="white" />
+          <circle cx="600" cy="200" r="50" fill="#F65254" stroke="white" />
+        </g>
+
+        <g transform="translate(0,10)">
+            <rect x="0" y="0" width="200" height="200" fill="black" fill-opacity="0" />
+            <rect x="0" y="200" width="200" height="200" fill="black" fill-opacity="0" />
+            <rect x="600" y="0" width="200" height="200" fill="black" fill-opacity="0" />
+            <rect x="600" y="200" width="200" height="200" fill="black" fill-opacity="0" />
+        </g>
+
+        <g class="center-infos">
+          <!-- Centered global rect -->
+          <rect x="200" y="0" width="400" height="420"></rect>
+
+          <!-- Dashed rects -->
+          <rect
+            x="200"
+            y="10"
+            width="400"
+            height="50"
+            stroke="white"
+            stroke-width="1"
+            
+          />
+          <rect
+            x="200"
+            y="60"
+            width="400"
+            height="50"
+            stroke="white"
+            stroke-width="1"
+            
+          />
+          <rect
+            x="200"
+            y="110"
+            width="400"
+            height="50"
+            stroke="white"
+            stroke-width="1"
+            
+          />
+          <!-- <rect x="200" y="160" width="400" height="50" stroke="white" stroke-width="3" stroke-dasharray="10 30"  />
+                <rect x="200" y="210" width="400" height="50" stroke="white" stroke-width="3" stroke-dasharray="10 30"  /> -->
+          <rect
+            x="200"
+            y="260"
+            width="400"
+            height="50"
+            stroke="white"
+            stroke-width="1"
+            
+          />
+          <rect
+            x="200"
+            y="310"
+            width="400"
+            height="50"
+            stroke="white"
+            stroke-width="1"
+            
+          />
+          <rect
+            x="200"
+            y="360"
+            width="400"
+            height="50"
+            stroke="white"
+            stroke-width="1"
+            
+          />
+
+          <!-- Vertical lines -->
+          <line
+            x1="200"
+            y1="10"
+            x2="200"
+            y2="410"
+            stroke="white"
+            stroke-width="4"
+          />
+          <line
+            x1="600"
+            y1="10"
+            x2="600"
+            y2="410"
+            stroke="white"
+            stroke-width="4"
+          />
+
+          <!-- Horizontal Lines -->
+          <line
+            x1="0"
+            y1="210"
+            x2="200"
+            y2="210"
+            stroke="white"
+            stroke-width="4"
+          />
+          <line
+            x1="600"
+            y1="210"
+            x2="800"
+            y2="210"
+            stroke="white"
+            stroke-width="4"
+          />
+        </g>
+
+        <g class="center-texts">
+          <text x="290" y="40" fill="#17B9D6" font-size="28">
+            TOTAL REVENUE
+          </text>
+          <text x="290" y="395" fill="#17B9D6" font-size="28">
+            TOTAL REVENUE
+          </text>
+
+          <text x="270" y="95" fill="#B890F0" font-size="28">
+            NUMBER OF ORDERS
+          </text>
+          <text x="270" y="340" fill="#B890F0" font-size="28">
+            NUMBER OF ORDERS
+          </text>
+
+          <text x="290" y="145" fill="#F090DA" font-size="28">
+            NUMBER OF ITEMS
+          </text>
+          <text x="290" y="295" fill="#F090DA" font-size="28">
+            NUMBER OF ITEMS
+          </text>
+
+          <text x="330" y="195" fill="#F65254" font-size="28">AVERAGE</text>
+          <text x="300" y="240" fill="#F65254" font-size="28">
+            DELIVERY TIME
+          </text>
+        </g>
+
+        <g class="curved-texts">
+          <g>
+            <path
+              id="spring-total-revenue"
+              d="M 45 150 Q 60 60 200 55"
+              fill="transparent"
+              stroke="transparent"
+              stroke-width="3"
+            />
+            <text>
+              <textPath
+                xlink:href="#spring-total-revenue"
+                fill="white"
+                font-size="24"
+                id="spring-total-revenue-value"
+              >
+                105,460 CP
+              </textPath>
+            </text>
+          </g>
+
+          <g>
+            <path
+              id="spring-number-of-orders"
+              d="M 100 150 Q 110 110 200 95"
+              fill="transparent"
+              stroke="transparent"
+              stroke-width="3"
+            />
+            <text>
+              <textPath
+                xlink:href="#spring-number-of-orders"
+                fill="white"
+                font-size="24"
+                id="spring-number-of-orders-value"
+              >
+                8545
+              </textPath>
+            </text>
+          </g>
+
+          <g>
+            <path
+              id="spring-number-of-items"
+              d="M 140 190 Q 140 170 180 145"
+              fill="transparent"
+              stroke="transparent"
+              stroke-width="3"
+            />
+            <text>
+              <textPath
+                xlink:href="#spring-number-of-items"
+                fill="white"
+                font-size="24"
+                id="spring-number-of-items-value"
+              >
+                55714
+              </textPath>
+            </text>
+          </g>
+
+          <g>
+            <text
+              fill="white"
+              font-size="18"
+              x="158"
+              y="200"
+              id="spring-average-delivery-time-value"
+            >
+              5D
+            </text>
+          </g>
+
+          <g>
+            <text
+              fill="white"
+              font-size="18"
+              x="158"
+              y="235"
+              id="winter-average-delivery-time-value"
+            >
+              3D
+            </text>
+          </g>
+
+          <g>
+            <path
+              id="winter-number-of-items"
+              d="M 120 230 Q 140 280 200 300"
+              fill="transparent"
+              stroke="transparent"
+              stroke-width="3"
+            />
+            <text>
+              <textPath
+                xlink:href="#winter-number-of-items"
+                fill="white"
+                font-size="24"
+                id="winter-number-of-items-value"
+              >
+                5741
+              </textPath>
+            </text>
+          </g>
+
+          <g>
+            <path
+              id="winter-number-of-orders"
+              d="M 70 260 Q 100 330 200 350"
+              fill="transparent"
+              stroke="transparent"
+              stroke-width="3"
+            />
+            <text>
+              <textPath
+                xlink:href="#winter-number-of-orders"
+                fill="white"
+                font-size="24"
+                id="winter-number-of-orders-value"
+              >
+                5741
+              </textPath>
+            </text>
+          </g>
+
+          <g>
+            <path
+              id="winter-total-revenue"
+              d="M 20 260 Q 10 330 200 410"
+              fill="transparent"
+              stroke="transparent"
+              stroke-width="3"
+            />
+            <text>
+              <textPath
+                xlink:href="#winter-total-revenue"
+                fill="white"
+                font-size="24"
+                id="winter-total-revenue-value"
+              >
+                78.450 CP
+              </textPath>
+            </text>
+          </g>
+
+          <g>
+            <path
+              id="summer-total-revenue"
+              d="M 650 50 Q 740 70 780 200"
+              fill="transparent"
+              stroke="transparent"
+              stroke-width="3"
+            />
+            <text>
+              <textPath
+                xlink:href="#summer-total-revenue"
+                fill="white"
+                font-size="24"
+                id="summer-total-revenue-value"
+              >
+                78.450 CP
+              </textPath>
+            </text>
+          </g>
+
+          <g>
+            <path
+              id="summer-number-of-orders"
+              d="M 640 100 Q 710 120 710 200"
+              fill="transparent"
+              stroke="transparent"
+              stroke-width="3"
+            />
+            <text>
+              <textPath
+                xlink:href="#summer-number-of-orders"
+                fill="white"
+                font-size="24"
+                id="summer-number-of-orders-value"
+              >
+                20 117
+              </textPath>
+            </text>
+          </g>
+
+          <g>
+            <path
+              id="summer-number-of-items"
+              d="M 610 150 Q 670 160 660 200"
+              fill="transparent"
+              stroke="transparent"
+              stroke-width="3"
+            />
+            <text>
+              <textPath
+                xlink:href="#summer-number-of-items"
+                fill="white"
+                font-size="24"
+                id="summer-number-of-items-value"
+              >
+                200 476
+              </textPath>
+            </text>
+          </g>
+
+          <g>
+            <text
+              fill="white"
+              font-size="16"
+              x="605"
+              y="200"
+              id="summer-average-delivery-time-value"
+            >
+              8D
+            </text>
+          </g>
+
+          <g>
+            <text
+              fill="white"
+              font-size="16"
+              x="605"
+              y="235"
+              id="autumn-average-delivery-time-value"
+            >
+              5D
+            </text>
+          </g>
+
+          <g>
+            <path
+              id="autumn-number-of-items"
+              d="M 630 290 Q 670 280 700 210"
+              fill="transparent"
+              stroke="transparent"
+              stroke-width="3"
+            />
+            <text>
+              <textPath
+                xlink:href="#autumn-number-of-items"
+                fill="white"
+                font-size="24"
+                id="autumn-number-of-items-value"
+              >
+                301 719
+              </textPath>
+            </text>
+          </g>
+
+          <g>
+            <path
+              id="autumn-number-of-orders"
+              d="M 650 330 Q 730 310 740 210"
+              fill="transparent"
+              stroke="transparent"
+              stroke-width="3"
+            />
+            <text>
+              <textPath
+                xlink:href="#autumn-number-of-orders"
+                fill="white"
+                font-size="24"
+                id="autumn-number-of-orders-value"
+              >
+                15
+              </textPath>
+            </text>
+          </g>
+
+          <g>
+            <path
+              id="autumn-total-revenue"
+              d="M 660 380 Q 790 340 780 210"
+              fill="transparent"
+              stroke="transparent"
+              stroke-width="3"
+            />
+            <text>
+              <textPath
+                xlink:href="#autumn-total-revenue"
+                fill="white"
+                font-size="24"
+                id="autumn-total-revenue-value"
+              >
+                330.756 CP
+              </textPath>
+            </text>
+          </g>
+        </g>
+      </g>
+
+      <g>
+        <text x="20" y="100" fill="white" font-size="26">SPRING</text>
+
+        <text x="790" y="100" fill="white" font-size="26">SUMMER</text>
+
+        <text x="20" y="450" fill="white" font-size="26">WINTER</text>
+
+        <text x="790" y="450" fill="white" font-size="26">AUTUMN</text>
+      </g>
+      <!-- <defs>
+        <marker
+          id="arrowhead"
+          markerWidth="10"
+          markerHeight="7"
+          refX="10"
+          refY="3.5"
+          orient="auto"
+        >
+          <polygon points="0 0, 10 3.5, 0 7" fill="white" />
+        </marker>
+      </defs> -->
+      <!-- <path
+        d="M 70 70 Q 150 -10 300 20"
+        fill="transparent"
+        stroke="white"
+        stroke-width="3"
+        marker-end="url(#arrowhead)"
+      />
+
+      <path
+        d="M 800 460 Q 780 500 620 500"
+        fill="transparent"
+        stroke="white"
+        stroke-width="3"
+        marker-end="url(#arrowhead)"
+      /> -->
+    </svg>
+
+    <section class="legend">
+      <div class="legend-item">
+        <span
+          style="
+            display: block;
+            height: 30px;
+            width: 30px;
+            margin-right: 10px;
+            background-color: #17B9D6;
+          "
+        >
+        </span>
+        <label style="color: #17B9D6"> TOTAL REVENUE GENERATED</label>
+      </div>
+
+      <div class="legend-item">
+        <span
+          style="
+            display: block;
+            height: 30px;
+            width: 30px;
+            margin-right: 10px;
+            background-color: #B890F0;
+          "
+        >
+        </span>
+        <label style="color: #B890F0"> TOTAL NUMBER OF ORDERS </label>
+      </div>
+
+      <div class="legend-item">
+        <span
+          style="
+            display: block;
+            height: 30px;
+            width: 30px;
+            margin-right: 10px;
+            background-color: #F090DA;
+          "
+        >
+        </span>
+        <label style="color: #F090DA"> TOTAL NUMBER OF ITEMS SOLD</label>
+      </div>
+
+      <div class="legend-item">
+        <span
+          style="
+            display: block;
+            height: 30px;
+            width: 30px;
+            margin-right: 10px;
+            background-color: #F65254;
+          "
+        >
+        </span>
+        <label style="color: #F65254"> AVERAGE DELIVERY TIME IN DAYS</label>
+      </div>
+    </section>
+
+
+    <div class="tooltip" id="tooltip"></div>
+
+    <script>
+      var data = {
+        2019: {
+          Autumn: {
+            total_revenue: 119,
+            total_orders: "14 055",
+            total_products: "237 749",
+            average_delivery_time: 7,
+          },
+          Spring: {
+            total_revenue: 115,
+            total_orders: "13 983",
+            total_products: "231 202",
+            average_delivery_time: 7,
+          },
+          Summer: {
+            total_revenue: 117,
+            total_orders: "14 089",
+            total_products: "235 305",
+            average_delivery_time: 7,
+          },
+          Winter: {
+            total_revenue: 113,
+            total_orders: "13 700",
+            total_products: "226 984",
+            average_delivery_time: 7,
+          },
+        },
+        2020: {
+          Autumn: {
+            total_revenue: 123,
+            total_orders: "14 175",
+            total_products: "247 860",
+            average_delivery_time: 7,
+          },
+          Spring: {
+            total_revenue: 121,
+            total_orders: "14 030",
+            total_products: "244 598",
+            average_delivery_time: 7,
+          },
+          Summer: {
+            total_revenue: 125,
+            total_orders: "14 171",
+            total_products: "249 722",
+            average_delivery_time: 7,
+          },
+          Winter: {
+            total_revenue: 117,
+            total_orders: "13 914",
+            total_products: "236 681",
+            average_delivery_time: 7,
+          },
+        },
+        2021: {
+          Autumn: {
+            total_revenue: 123,
+            total_orders: "14 127",
+            total_products: "247 139",
+            average_delivery_time: 17,
+          },
+          Spring: {
+            total_revenue: 120,
+            total_orders: "14 067",
+            total_products: "241 721",
+            average_delivery_time: 7,
+          },
+          Summer: {
+            total_revenue: 118,
+            total_orders: "13 998",
+            total_products: "238 735",
+            average_delivery_time: 57,
+          },
+          Winter: {
+            total_revenue: 120 ,
+            total_orders: "13 888",
+            total_products: "242 433",
+            average_delivery_time: 7,
+          },
+        },
+        2022: {
+          Autumn: {
+            total_revenue: 118 ,
+            total_orders: "13 851",
+            total_products: "240 414",
+            average_delivery_time: 7,
+          },
+          Spring: {
+            total_revenue: 121,
+            total_orders: "13 872",
+            total_products: "243 847",
+            average_delivery_time: 7,
+          },
+          Summer: {
+            total_revenue: 123,
+            total_orders: "14 030",
+            total_products: "248 168",
+            average_delivery_time: 7,
+          },
+          Winter: {
+            total_revenue: 125,
+            total_orders: "14 246",
+            total_products: "251 811",
+            average_delivery_time: 7,
+          },
+        },
+        2023: {
+          Autumn: {
+            total_revenue: 117 ,
+            total_orders: "13 885",
+            total_products: "236 781",
+            average_delivery_time: 7,
+          },
+          Spring: {
+            total_revenue: 122 ,
+            total_orders: "14 244",
+            total_products: "247 072",
+            average_delivery_time: 7,
+          },
+          Summer: {
+            total_revenue: 119 ,
+            total_orders: "14 004",
+            total_products: "242 116",
+            average_delivery_time: 7,
+          },
+          Winter: {
+            total_revenue: 117 ,
+            total_orders: "13 714",
+            total_products: "237 618",
+            average_delivery_time: 7,
+          },
+        },
+      };
+
+      var currentYear = 2020;
+
+      var previousButton = document.getElementById("previous");
+      var nextButton = document.getElementById("next");
+
+      var yearValue = document.getElementById("year-value");
+
+      var springTotalRevenue = document.getElementById(
+        "spring-total-revenue-value"
+      );
+      var springNumberOfOrders = document.getElementById(
+        "spring-number-of-orders-value"
+      );
+      var springNumberOfItems = document.getElementById(
+        "spring-number-of-items-value"
+      );
+      var springAverageDeliveryTime = document.getElementById(
+        "spring-average-delivery-time-value"
+      );
+
+      var winterTotalRevenue = document.getElementById(
+        "winter-total-revenue-value"
+      );
+      var winterNumberOfOrders = document.getElementById(
+        "winter-number-of-orders-value"
+      );
+      var winterNumberOfItems = document.getElementById(
+        "winter-number-of-items-value"
+      );
+      var winterAverageDeliveryTime = document.getElementById(
+        "winter-average-delivery-time-value"
+      );
+
+      var summerTotalRevenue = document.getElementById(
+        "summer-total-revenue-value"
+      );
+      var summerNumberOfOrders = document.getElementById(
+        "summer-number-of-orders-value"
+      );
+      var summerNumberOfItems = document.getElementById(
+        "summer-number-of-items-value"
+      );
+      var summerAverageDeliveryTime = document.getElementById(
+        "summer-average-delivery-time-value"
+      );
+
+      var autumnTotalRevenue = document.getElementById(
+        "autumn-total-revenue-value"
+      );
+      var autumnNumberOfOrders = document.getElementById(
+        "autumn-number-of-orders-value"
+      );
+      var autumnNumberOfItems = document.getElementById(
+        "autumn-number-of-items-value"
+      );
+      var autumnAverageDeliveryTime = document.getElementById(
+        "autumn-average-delivery-time-value"
+      );
+
+      previousButton.addEventListener("click", () => {
+        nextButton.removeAttribute("disabled");
+
+        if (currentYear > 2019) {
+          currentYear -= 1;
+        }
+
+        if (currentYear === 2019) {
+          previousButton.setAttribute("disabled", true);
+        }
+
+        yearValue.innerText = currentYear;
+        updateChartData(currentYear);
+      });
+
+      nextButton.addEventListener("click", () => {
+        previousButton.removeAttribute("disabled");
+        if (currentYear < 2023) {
+          currentYear += 1;
+        }
+
+        if (currentYear === 2023) {
+          nextButton.setAttribute("disabled", true);
+        }
+
+        yearValue.innerText = currentYear;
+        updateChartData(currentYear);
+      });
+
+      var tooltip = document.getElementById('tooltip');
+
+      // Function to show tooltip
+      function showTooltip(event, content) {
+        tooltip.innerHTML = content;
+        tooltip.style.display = 'block';
+        tooltip.style.left = event.pageX + 10 + 'px';
+        tooltip.style.top = event.pageY + 10 + 'px';
+      }
+
+      // Function to hide tooltip
+      function hideTooltip() {
+        tooltip.style.display = 'none';
+      }
+      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+   
+
+      function updateChartData(year) {
+        const strYear = year.toString();
+        const yearData = data[strYear];
+        // spring
+  
+        springTotalRevenue.textContent = yearData["Spring"]["total_revenue"] + ' Million';
+        springNumberOfOrders.textContent = yearData["Spring"]["total_orders"];
+        springNumberOfItems.textContent = yearData["Spring"]["total_products"];
+        springAverageDeliveryTime.textContent =
+          yearData["Spring"]["average_delivery_time"] + ' D';
+      
+            
+
+        // winter
+        winterTotalRevenue.textContent = yearData["Winter"]["total_revenue"] + ' Million';
+        winterNumberOfOrders.textContent = yearData["Winter"]["total_orders"];
+        winterNumberOfItems.textContent = yearData["Winter"]["total_products"];
+        winterAverageDeliveryTime.textContent =
+          yearData["Winter"]["average_delivery_time"]+ ' D';
+
+        // summer
+        summerTotalRevenue.textContent = yearData["Summer"]["total_revenue"] + ' Million';
+        summerNumberOfOrders.textContent = yearData["Summer"]["total_orders"];
+        summerNumberOfItems.textContent = yearData["Summer"]["total_products"];
+        summerAverageDeliveryTime.textContent =
+          yearData["Summer"]["average_delivery_time"] + ' D';
+
+
+        // autumn
+        autumnTotalRevenue.textContent = yearData["Autumn"]["total_revenue"] + ' Million';
+        autumnNumberOfOrders.textContent = yearData["Autumn"]["total_orders"];
+        autumnNumberOfItems.textContent = yearData["Autumn"]["total_products"];
+        autumnAverageDeliveryTime.textContent =
+          yearData["Autumn"]["average_delivery_time"] + ' D';
+      }
+
+
+      updateChartData(currentYear)
+
+
+
+
+
+
+      // Get tooltip element
+      var tooltip = document.getElementById('tooltip');
+
+      // Function to show tooltip
+      function showTooltip(event, content) {
+        tooltip.innerHTML = content;
+        tooltip.style.display = 'block';
+        tooltip.style.left = event.pageX + 10 + 'px';
+        tooltip.style.top = event.pageY + 10 + 'px';
+      }
+
+      // Function to hide tooltip
+      function hideTooltip() {
+        tooltip.style.display = 'none';
+      }
+
+      // Add hover event listeners to the circles
+      document.querySelectorAll('circle').forEach(circle => {
+        circle.addEventListener('mouseover', (event) => {
+          const season = event.target.getAttribute('data-season');
+          const metric = event.target.getAttribute('data-metric');
+          const value = event.target.getAttribute('data-value');
+          showTooltip(event, `${season} - ${metric}: ${value}`);
+        });
+
+        circle.addEventListener('mousemove', (event) => {
+          tooltip.style.left = event.pageX + 10 + 'px';
+          tooltip.style.top = event.pageY + 10 + 'px';
+        });
+
+        circle.addEventListener('mouseout', () => {
+          hideTooltip();
+        });
+      });
+
+    </script>
+  </body>
+</html>
+
+
+<!-- // color intensity
+// hover and see more detailed NUMBER
+// highlight skewed  numbers 
+// show total per year  -->
